@@ -1,4 +1,3 @@
-import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 
@@ -15,11 +14,8 @@ def create_pandas_table(sql_query, connection):
     return table
 
 
-connection = psycopg2.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD)
 engine = create_engine(CONNECTION_DETAILS)
-
-cursor = connection.cursor()
-
+connection = engine.connect()
 
 query = '''
         select 
@@ -37,4 +33,5 @@ records = create_pandas_table(query, connection)
 
 print(records)
 
-connection.close()
+connection.invalidate()
+engine.dispose()
