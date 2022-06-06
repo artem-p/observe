@@ -1,6 +1,7 @@
+from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine
-
+import time
 
 
 CONNECTION_DETAILS = "postgresql://public_readonly:nearprotocol@35.184.214.98/testnet_explorer"
@@ -17,7 +18,13 @@ def create_pandas_table(sql_query, connection):
 engine = create_engine(CONNECTION_DETAILS)
 connection = engine.connect()
 
-query = '''
+now = time.time_ns()
+
+hour_ago = now - 3600 * 1000 * 1000 * 1000
+
+print(hour_ago)
+
+query = f'''
         select 
             date_trunc('minute', to_timestamp(block_timestamp/1000/1000/1000)) as time,
             signer_account_id as signer,
@@ -25,7 +32,8 @@ query = '''
         from 
             transactions t
         where
-            receiver_account_id = 'guest-book.testnet'
+            block_timestamp > {hour_ago}
+        limit 100
         '''
 
 
